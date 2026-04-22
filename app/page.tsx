@@ -1,65 +1,185 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+import { Hero } from '@/components/home/Hero'
+import { QuickActions } from '@/components/home/QuickActions'
+import { SocialProof } from '@/components/home/SocialProof'
+import { NoctisTeaser } from '@/components/home/NoctisTeaser'
+import { LatestVideo } from '@/components/home/LatestVideo'
+
+function NewsletterStrip() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim()) return
+
+    setStatus('loading')
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (res.ok) {
+        setStatus('success')
+        setMessage('¡Bienvenido a los Terroríficos! Revisa tu correo.')
+        setEmail('')
+      } else {
+        throw new Error('Error al suscribirse')
+      }
+    } catch {
+      setStatus('error')
+      setMessage('Algo salió mal. Intenta de nuevo.')
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <section
+      style={{
+        backgroundColor: 'var(--deep)',
+        padding: '60px 1.5rem',
+        borderTop: '1px solid rgba(139,0,0,0.15)',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '600px',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '1.25rem',
+          textAlign: 'center',
+        }}
+      >
+        <div>
+          <p
+            style={{
+              color: 'var(--blood)',
+              fontSize: '0.7rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              marginBottom: '0.5rem',
+            }}
+          >
+            Newsletter
+          </p>
+          <h2
+            className="font-nidex"
+            style={{
+              color: 'var(--parchment)',
+              fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+              margin: 0,
+              letterSpacing: '0.04em',
+            }}
+          >
+            Únete a los Terroríficos
+          </h2>
+          <p
+            style={{
+              color: 'var(--fog)',
+              fontSize: '0.88rem',
+              marginTop: '0.5rem',
+              lineHeight: 1.5,
+            }}
+          >
+            Recibe los nuevos episodios, relatos y noticias de terror directo en tu correo.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {status === 'success' ? (
+          <div
+            style={{
+              background: 'rgba(139,0,0,0.12)',
+              border: '1px solid rgba(139,0,0,0.3)',
+              borderRadius: '8px',
+              padding: '1rem 1.5rem',
+              color: 'var(--parchment)',
+              fontSize: '0.9rem',
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            {message}
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              width: '100%',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@correo.com"
+              required
+              disabled={status === 'loading'}
+              style={{
+                flex: '1 1 220px',
+                background: 'rgba(22,9,30,0.8)',
+                border: '1px solid rgba(139,0,0,0.3)',
+                borderRadius: '6px',
+                padding: '0.75rem 1rem',
+                color: 'var(--parchment)',
+                fontSize: '0.9rem',
+                outline: 'none',
+                minWidth: 0,
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(139,0,0,0.6)' }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(139,0,0,0.3)' }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            <button
+              type="submit"
+              disabled={status === 'loading'}
+              style={{
+                flexShrink: 0,
+                background: 'var(--blood)',
+                color: 'var(--parchment)',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.75rem 1.5rem',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                cursor: status === 'loading' ? 'not-allowed' : 'crosshair',
+                opacity: status === 'loading' ? 0.6 : 1,
+                transition: 'background 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (status !== 'loading') e.currentTarget.style.background = 'var(--crimson)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--blood)'
+              }}
+            >
+              {status === 'loading' ? 'Suscribiendo...' : 'Suscribirme'}
+            </button>
+          </form>
+        )}
+
+        {status === 'error' && (
+          <p style={{ color: 'var(--crimson)', fontSize: '0.82rem', margin: 0 }}>{message}</p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <main>
+      <Hero />
+      <QuickActions />
+      <LatestVideo />
+      <SocialProof />
+      <NoctisTeaser />
+      <NewsletterStrip />
+    </main>
+  )
 }

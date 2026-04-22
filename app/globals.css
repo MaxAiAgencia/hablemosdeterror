@@ -1,26 +1,148 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── Nidex font — colocar Nidex.woff2 en /public/fonts/ ── */
+@font-face {
+  font-family: 'Nidex';
+  src: url('/fonts/Nidex.woff2') format('woff2'),
+       url('/fonts/Nidex.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* ── Tailwind v4 theme ── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-black:     #050208;
+  --color-deep:      #0d0510;
+  --color-dark:      #16091e;
+  --color-blood:     #8b0000;
+  --color-crimson:   #c0142a;
+  --color-gold:      #c9a84c;
+  --color-amber:     #e8a020;
+  --color-parchment: #e8dcc8;
+  --color-fog:       #b8a898;
+  --color-muted:     #5a4a5a;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --font-nidex: 'Nidex', 'Impact', 'Arial Black', sans-serif;
+  --font-sans:  system-ui, sans-serif;
+
+  --animate-glitch:    glitch 4s infinite;
+  --animate-float:     float 6s ease-in-out infinite;
+  --animate-pulse-red: pulse-red 2s ease-in-out infinite;
+
+  @keyframes glitch {
+    0%, 90%, 100% { transform: translate(0); filter: none; }
+    91% { transform: translate(-2px, 1px); filter: brightness(1.2) saturate(2); }
+    93% { transform: translate(2px, -1px); filter: hue-rotate(90deg); }
+    95% { transform: translate(-1px, 2px); filter: none; }
+    97% { transform: translate(1px, -1px); filter: brightness(0.8); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.4); }
+    50% { box-shadow: 0 0 20px 8px rgba(139, 0, 0, 0.15); }
   }
 }
 
+/* ── CSS Variables ── */
+:root {
+  --black:     #050208;
+  --deep:      #0d0510;
+  --dark:      #16091e;
+  --blood:     #8b0000;
+  --crimson:   #c0142a;
+  --gold:      #c9a84c;
+  --amber:     #e8a020;
+  --parchment: #e8dcc8;
+  --fog:       #b8a898;
+  --muted:     #5a4a5a;
+}
+
+/* ── Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--black);
+  color: var(--parchment);
+  font-family: system-ui, sans-serif;
+  cursor: crosshair;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Noise overlay global */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 2px; }
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--blood);
+  color: var(--parchment);
+}
+
+/* ── Utility classes ── */
+.font-nidex {
+  font-family: 'Nidex', 'Impact', 'Arial Black', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.text-gradient-blood {
+  background: linear-gradient(135deg, var(--blood), var(--crimson));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--gold), var(--amber));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-blood-subtle {
+  border: 1px solid rgba(139, 0, 0, 0.25);
+}
+
+.glow-blood {
+  box-shadow: 0 0 20px rgba(139, 0, 0, 0.3), 0 0 60px rgba(139, 0, 0, 0.1);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.3), 0 0 60px rgba(201, 168, 76, 0.1);
+}
+
+.card-dark {
+  background: var(--dark);
+  border: 1px solid rgba(139, 0, 0, 0.15);
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-dark:hover {
+  border-color: rgba(139, 0, 0, 0.4);
+  box-shadow: 0 4px 24px rgba(139, 0, 0, 0.12);
 }
