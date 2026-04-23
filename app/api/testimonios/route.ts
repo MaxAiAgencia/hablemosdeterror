@@ -100,6 +100,7 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             from: 'Hablemos de Terror <noreply@hablemosdeterror.com>',
             to: 'tuhistoria@hablemosdeterror.com',
+            cc: 'max.sosadiaz@gmail.com',
             subject: `Nuevo testimonio: ${titulo_testimonio}`,
             html: `
               <h2>Nuevo testimonio recibido</h2>
