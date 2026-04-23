@@ -38,6 +38,8 @@ const inputStyle: React.CSSProperties = {
   borderRadius: '6px',
   padding: '10px 14px',
   width: '100%',
+  maxWidth: '100%',
+  boxSizing: 'border-box',
   outline: 'none',
   fontSize: '0.9rem',
 }
@@ -102,8 +104,8 @@ export default function TestimoniosPage() {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: 'var(--black)' }}>
-      <div className="max-w-5xl mx-auto px-4 py-16 flex flex-col gap-20">
+    <main className="min-h-screen" style={{ background: 'var(--black)', overflowX: 'hidden' }}>
+      <div className="max-w-5xl mx-auto px-4 py-16 flex flex-col gap-20" style={{ overflowX: 'hidden' }}>
 
         {/* ── Formulario de envío ────────────────────────────────────── */}
         <section id="enviar" className="flex flex-col gap-8">
@@ -262,7 +264,7 @@ export default function TestimoniosPage() {
                     value={contenido}
                     onChange={e => setContenido(e.target.value)}
                     placeholder="Escribe tu testimonio aquí. Sé específico: dónde, cuándo, qué pasó. Mínimo 500 caracteres."
-                    style={{ ...inputStyle, resize: 'vertical', lineHeight: '1.7' }}
+                    style={{ ...inputStyle, resize: 'none', lineHeight: '1.7' }}
                     onFocus={e => (e.currentTarget.style.border = '1px solid var(--crimson)')}
                     onBlur={e => (e.currentTarget.style.border = '1px solid rgba(139,0,0,0.3)')}
                   />

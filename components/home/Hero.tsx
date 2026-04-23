@@ -1,10 +1,20 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Mic, BookOpen, PenLine } from 'lucide-react'
 import { ParticleCanvas } from '@/components/ui/ParticleCanvas'
 
 export function Hero() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   return (
     <section
       style={{
@@ -25,7 +35,7 @@ export function Hero() {
           inset: 0,
           backgroundImage: 'url(/images/hero.png)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center top',
+          backgroundPosition: isMobile ? 'right top' : 'center top',
           zIndex: 0,
         }}
       />
