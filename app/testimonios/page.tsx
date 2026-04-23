@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { CheckCircle2, Loader2 } from 'lucide-react'
 
@@ -56,10 +57,17 @@ export default function TestimoniosPage() {
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const captchaRef = useRef<HCaptcha>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!consentimiento) return
+    if (!captchaToken) {
+      setStatus('error')
+      setErrorMsg('Por favor completa la verificación de seguridad.')
+      return
+    }
     setStatus('loading')
     setErrorMsg('')
     try {
@@ -74,17 +82,22 @@ export default function TestimoniosPage() {
           categoria,
           es_real: esReal === 'real',
           contenido,
+          hcaptchaToken: captchaToken,
         }),
       })
       const data = await res.json()
       if (data.success) {
         setStatus('success')
+        captchaRef.current?.resetCaptcha()
+        setCaptchaToken(null)
       } else {
         throw new Error(data.message ?? 'Error desconocido')
       }
     } catch (err) {
       setStatus('error')
       setErrorMsg(err instanceof Error ? err.message : 'Ocurrió un error. Intenta de nuevo.')
+      captchaRef.current?.resetCaptcha()
+      setCaptchaToken(null)
     }
   }
 
@@ -268,6 +281,17 @@ export default function TestimoniosPage() {
                     Acepto que Hablemos de Terror pueda leer y adaptar mi testimonio en el podcast, mencionando mi nombre si así lo deseo. No cedo derechos de autoría.
                   </span>
                 </label>
+
+                {/* hCaptcha */}
+                <div>
+                  <HCaptcha
+                    ref={captchaRef}
+                    sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+                    onVerify={token => setCaptchaToken(token)}
+                    onExpire={() => setCaptchaToken(null)}
+                    theme="dark"
+                  />
+                </div>
 
                 {/* Error */}
                 {status === 'error' && (

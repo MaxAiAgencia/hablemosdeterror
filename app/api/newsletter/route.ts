@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { verifyHcaptcha } from '@/lib/hcaptcha'
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { email, nombre, tag } = body as {
+    const { email, nombre, tag, hcaptchaToken } = body as {
       email?: string
       nombre?: string
       tag?: string
+      hcaptchaToken?: string
+    }
+
+    const captchaOk = await verifyHcaptcha(hcaptchaToken)
+    if (!captchaOk) {
+      return NextResponse.json(
+        { success: false, message: 'Verificación de seguridad fallida. Intenta de nuevo.' },
+        { status: 400 }
+      )
     }
 
     if (!email) {

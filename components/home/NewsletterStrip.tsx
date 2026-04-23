@@ -1,21 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 export function NewsletterStrip() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  const captchaRef = useRef<HCaptcha>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.trim()) return
     setStatus('loading')
+    // Ejecutar captcha invisible y esperar el token
+    captchaRef.current?.execute()
+  }
+
+  const onCaptchaVerify = async (token: string) => {
     try {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, hcaptchaToken: token }),
       })
       if (res.ok) {
         setStatus('success')
@@ -28,6 +35,7 @@ export function NewsletterStrip() {
       setStatus('error')
       setMessage('Algo salió mal. Intenta de nuevo.')
     }
+    captchaRef.current?.resetCaptcha()
   }
 
   return (
@@ -93,6 +101,15 @@ export function NewsletterStrip() {
         {status === 'error' && (
           <p style={{ color: 'var(--crimson)', fontSize: '0.82rem', margin: 0 }}>{message}</p>
         )}
+
+        <HCaptcha
+          ref={captchaRef}
+          sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+          onVerify={onCaptchaVerify}
+          onExpire={() => captchaRef.current?.resetCaptcha()}
+          size="invisible"
+          theme="dark"
+        />
       </div>
     </section>
   )

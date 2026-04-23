@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 const STORAGE_KEY = 'hdt-newsletter-shown';
 const DELAY_MS = 30_000; // 30 segundos
@@ -13,6 +14,7 @@ export default function NewsletterPopup() {
   const [email, setEmail] = useState('');
   const [estado, setEstado] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const captchaRef = useRef<HCaptcha>(null);
 
   // No mostrar en rutas de admin
   const esAdmin = pathname?.startsWith('/admin');
@@ -54,22 +56,22 @@ export default function NewsletterPopup() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
-
     setEstado('loading');
     setErrorMsg('');
+    captchaRef.current?.execute();
+  }
 
+  async function onCaptchaVerify(token: string) {
     try {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, hcaptchaToken: token }),
       });
 
       if (res.ok) {
         setEstado('success');
-        setTimeout(() => {
-          setVisible(false);
-        }, 2000);
+        setTimeout(() => setVisible(false), 2000);
       } else {
         const data = await res.json().catch(() => ({}));
         setErrorMsg(data?.error ?? 'Error al suscribirse. Intenta de nuevo.');
@@ -79,6 +81,7 @@ export default function NewsletterPopup() {
       setErrorMsg('Error de red. Intenta de nuevo.');
       setEstado('error');
     }
+    captchaRef.current?.resetCaptcha();
   }
 
   if (!visible) return null;
@@ -181,6 +184,15 @@ export default function NewsletterPopup() {
             <p className="text-center text-xs" style={{ color: 'rgba(184,168,152,0.5)' }}>
               Puedes darte de baja cuando quieras.
             </p>
+
+            <HCaptcha
+              ref={captchaRef}
+              sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+              onVerify={onCaptchaVerify}
+              onExpire={() => captchaRef.current?.resetCaptcha()}
+              size="invisible"
+              theme="dark"
+            />
           </form>
         )}
       </div>
