@@ -81,7 +81,7 @@ function decodeXML(str: string): string {
 
 export default async function VideosPage() {
   const videos = await fetchLatestVideos()
-  const channelUrl = 'https://youtube.com/@hablemosdeterror'
+  const channelUrl = 'https://www.youtube.com/channel/UCr67JlLCGuSZmglP_1e2oQQ'
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--black)' }}>

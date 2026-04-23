@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 
 // ─── Social SVG Icons ─────────────────────────────────────────────────────────
@@ -47,22 +49,22 @@ function SpreakerIcon() {
 const socialLinks = [
   {
     label: 'YouTube',
-    href: 'https://youtube.com/@hablemosdeterror',
+    href: 'https://www.youtube.com/channel/UCr67JlLCGuSZmglP_1e2oQQ',
     Icon: YouTubeIcon,
   },
   {
     label: 'Facebook',
-    href: 'https://facebook.com/hablemosdeterror',
+    href: 'https://www.facebook.com/hablemosdeterror',
     Icon: FacebookIcon,
   },
   {
     label: 'Instagram',
-    href: 'https://instagram.com/hablemosdeterror',
+    href: 'https://www.instagram.com/terrorpodcast/',
     Icon: InstagramIcon,
   },
   {
     label: 'TikTok',
-    href: 'https://tiktok.com/@hablemosdeterror',
+    href: 'https://www.tiktok.com/@hterror',
     Icon: TikTokIcon,
   },
   {
