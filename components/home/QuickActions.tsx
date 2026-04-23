@@ -1,7 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView, type Variants } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 import { Mic, BookOpen, PenLine } from 'lucide-react'
 import Link from 'next/link'
 
@@ -36,9 +35,6 @@ const fadeInUp: Variants = {
 }
 
 export function QuickActions() {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-
   return (
     <section
       style={{
@@ -47,7 +43,6 @@ export function QuickActions() {
       }}
     >
       <div
-        ref={ref}
         style={{
           maxWidth: '1100px',
           margin: '0 auto',
@@ -62,14 +57,14 @@ export function QuickActions() {
             custom={i}
             variants={fadeInUp}
             initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
           >
             <Link
               href={href}
               style={{ textDecoration: 'none', display: 'block', height: '100%' }}
             >
               <div
-                className="card-dark"
                 style={{
                   padding: '2.5rem 2rem',
                   display: 'flex',
@@ -78,17 +73,20 @@ export function QuickActions() {
                   gap: '1rem',
                   height: '100%',
                   cursor: 'crosshair',
-                  transition: 'border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease',
+                  background: 'var(--dark)',
+                  border: '1px solid rgba(139,0,0,0.35)',
+                  borderRadius: '8px',
+                  transition: 'border-color 0.3s, box-shadow 0.3s, transform 0.2s',
                 }}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget
-                  el.style.borderColor = 'rgba(139,0,0,0.55)'
-                  el.style.boxShadow = '0 0 24px rgba(139,0,0,0.2), 0 4px 32px rgba(0,0,0,0.4)'
-                  el.style.transform = 'translateY(-3px)'
+                  el.style.borderColor = 'rgba(139,0,0,0.7)'
+                  el.style.boxShadow = '0 0 30px rgba(139,0,0,0.2)'
+                  el.style.transform = 'translateY(-4px)'
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget
-                  el.style.borderColor = 'rgba(139,0,0,0.15)'
+                  el.style.borderColor = 'rgba(139,0,0,0.35)'
                   el.style.boxShadow = 'none'
                   el.style.transform = 'translateY(0)'
                 }}

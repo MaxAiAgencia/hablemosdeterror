@@ -1,7 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 interface SectionHeaderProps {
@@ -17,16 +16,13 @@ export function SectionHeader({
   align = 'left',
   className,
 }: SectionHeaderProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
-
   const isCenter = align === 'center'
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.55, ease: 'easeOut' }}
       className={cn('flex flex-col gap-3', isCenter && 'items-center text-center', className)}
     >
@@ -39,8 +35,9 @@ export function SectionHeader({
 
       {/* Decorative line */}
       <motion.div
-        initial={{ width: 0, opacity: 0 }}
-        animate={isInView ? { width: 40, opacity: 1 } : { width: 0, opacity: 0 }}
+        initial={{ width: 0 }}
+        whileInView={{ width: 40 }}
+        viewport={{ once: true }}
         transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 }}
         style={{
           height: '3px',
@@ -51,15 +48,12 @@ export function SectionHeader({
       />
 
       {subtitle && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
+        <p
           className="text-base md:text-lg max-w-2xl leading-relaxed"
           style={{ color: 'var(--fog)' }}
         >
           {subtitle}
-        </motion.p>
+        </p>
       )}
     </motion.div>
   )

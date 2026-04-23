@@ -11,6 +11,11 @@ export const metadata: Metadata = {
     template: '%s | Hablemos de Terror',
   },
   description: 'El podcast y canal de YouTube de terror en español con Efraín Sosa. 191K+ suscriptores. Historias reales, relatos y mucho más.',
+  icons: {
+    icon: '/images/calavera.png',
+    shortcut: '/images/calavera.png',
+    apple: '/images/calavera.png',
+  },
   openGraph: {
     title: 'Hablemos de Terror',
     description: 'El podcast de terror en español',

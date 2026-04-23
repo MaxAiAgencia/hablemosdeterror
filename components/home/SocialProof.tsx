@@ -57,7 +57,7 @@ const fadeInUp: Variants = {
 
 export function SocialProof() {
   const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const inView = useInView(ref, { once: true, amount: 0.2 })
 
   return (
     <section
@@ -83,7 +83,8 @@ export function SocialProof() {
             custom={i}
             variants={fadeInUp}
             initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
             style={{
               display: 'flex',
               flexDirection: 'column',
