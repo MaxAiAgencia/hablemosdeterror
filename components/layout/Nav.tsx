@@ -14,8 +14,6 @@ const links = [
   { label: 'Merch', href: '/merch' },
 ]
 
-const noctisLink = { label: 'Noctis', href: '/noctis' }
-
 interface NavLinkProps {
   href: string
   children: React.ReactNode
@@ -48,9 +46,10 @@ export function Nav() {
   return (
     <>
       <nav
-        className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-10 h-16"
+        className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-10"
         style={{
-          backgroundColor: 'rgba(5, 2, 8, 0.85)',
+          height: 72,
+          backgroundColor: 'rgba(5, 2, 8, 0.9)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
           borderBottom: '1px solid rgba(139, 0, 0, 0.2)',
@@ -61,8 +60,7 @@ export function Nav() {
           <img
             src="/images/logo-horizontal.png"
             alt="Hablemos de Terror"
-            height={48}
-            style={{ height: 48, width: 'auto', objectFit: 'contain' }}
+            style={{ height: 60, width: 'auto', objectFit: 'contain' }}
           />
         </Link>
 
@@ -77,12 +75,6 @@ export function Nav() {
               {link.label}
             </NavLink>
           ))}
-          <NavLink
-            href={noctisLink.href}
-            style={{ color: '#9333ea' }}
-          >
-            {noctisLink.label}
-          </NavLink>
         </div>
 
         {/* Mobile hamburger */}
@@ -146,14 +138,6 @@ export function Nav() {
                     {link.label}
                   </NavLink>
                 ))}
-                <NavLink
-                  href={noctisLink.href}
-                  onClick={closeDrawer}
-                  className="text-base"
-                  style={{ color: '#9333ea' }}
-                >
-                  {noctisLink.label}
-                </NavLink>
               </nav>
 
               {/* Logo in drawer */}
@@ -161,7 +145,7 @@ export function Nav() {
                 <img
                   src="/images/logo-icon.png"
                   alt="HDT"
-                  style={{ width: 40, height: 40, objectFit: 'contain', opacity: 0.5 }}
+                  style={{ width: 44, height: 44, objectFit: 'contain', opacity: 0.5 }}
                 />
               </div>
             </motion.aside>
