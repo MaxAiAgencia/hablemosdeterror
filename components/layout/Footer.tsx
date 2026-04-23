@@ -69,7 +69,7 @@ const socialLinks = [
   },
   {
     label: 'Spotify',
-    href: 'https://open.spotify.com/show/hablemosdeterror',
+    href: 'https://www.spreaker.com/show/hablemos-de-terror',
     Icon: SpotifyIcon,
   },
 ]
