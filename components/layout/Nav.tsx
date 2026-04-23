@@ -48,7 +48,7 @@ export function Nav() {
       <nav
         className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-10"
         style={{
-          height: 72,
+          height: 88,
           backgroundColor: 'rgba(5, 2, 8, 0.9)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
@@ -60,7 +60,7 @@ export function Nav() {
           <img
             src="/images/logo-horizontal.png"
             alt="Hablemos de Terror"
-            style={{ height: 60, width: 'auto', objectFit: 'contain' }}
+            style={{ height: 76, width: 'auto', objectFit: 'contain' }}
           />
         </Link>
 
