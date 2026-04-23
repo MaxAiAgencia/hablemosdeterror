@@ -2,124 +2,87 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { VideoGrid } from '@/components/videos/VideoGrid'
 import { ExternalLink } from 'lucide-react'
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-const YT_IDS = ['dQw4w9WgXcQ', 'jNQXAC9IVRw', 'M7lc1UVf-VE', '9bZkp7q19f0']
+export interface YoutubeVideo {
+  id: string
+  youtubeId: string
+  title: string
+  thumbnail: string
+  date: string
+  views?: number
+  duration?: string
+}
 
-const VIDEOS = [
-  {
-    id: 'v-01',
-    title: 'Los 5 Casos Paranormales Más Aterradores de México',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[0]}/mqdefault.jpg`,
-    views: 342000,
-    duration: '18:42',
-    date: '2026-04-01',
-    youtubeId: YT_IDS[0],
-  },
-  {
-    id: 'v-02',
-    title: 'Rituales de Brujería que Nunca Debes Intentar',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[1]}/mqdefault.jpg`,
-    views: 215000,
-    duration: '22:15',
-    date: '2026-03-25',
-    youtubeId: YT_IDS[1],
-  },
-  {
-    id: 'v-03',
-    title: 'La Historia Real Detrás de La Llorona',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[2]}/mqdefault.jpg`,
-    views: 589000,
-    duration: '31:07',
-    date: '2026-03-18',
-    youtubeId: YT_IDS[2],
-  },
-  {
-    id: 'v-04',
-    title: 'Criaturas del Bosque: Testimonios sin Explicación',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[3]}/mqdefault.jpg`,
-    views: 178000,
-    duration: '25:33',
-    date: '2026-03-10',
-    youtubeId: YT_IDS[3],
-  },
-  {
-    id: 'v-05',
-    title: 'Casa Encantada: Pasé la Noche en el Lugar Más Aterrador',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[0]}/mqdefault.jpg`,
-    views: 423000,
-    duration: '41:20',
-    date: '2026-03-03',
-    youtubeId: YT_IDS[0],
-  },
-  {
-    id: 'v-06',
-    title: 'El Cuarto de los Espejos: Historia Completa',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[1]}/mqdefault.jpg`,
-    views: 130000,
-    duration: '19:58',
-    date: '2026-02-24',
-    youtubeId: YT_IDS[1],
-  },
-  {
-    id: 'v-07',
-    title: 'Objetos Malditos que Siguen Activos en México',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[2]}/mqdefault.jpg`,
-    views: 267000,
-    duration: '28:14',
-    date: '2026-02-17',
-    youtubeId: YT_IDS[2],
-  },
-  {
-    id: 'v-08',
-    title: 'Entrevista con un Cazador de Fantasmas Profesional',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[3]}/mqdefault.jpg`,
-    views: 198000,
-    duration: '37:45',
-    date: '2026-02-10',
-    youtubeId: YT_IDS[3],
-  },
-  {
-    id: 'v-09',
-    title: 'Los Sueños Lúcidos y la Brecha al Otro Mundo',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[0]}/mqdefault.jpg`,
-    views: 312000,
-    duration: '23:02',
-    date: '2026-02-03',
-    youtubeId: YT_IDS[0],
-  },
-  {
-    id: 'v-10',
-    title: 'Noche de Relatos: Escucha con las Luces Apagadas',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[1]}/mqdefault.jpg`,
-    views: 445000,
-    duration: '55:30',
-    date: '2026-01-27',
-    youtubeId: YT_IDS[1],
-  },
-  {
-    id: 'v-11',
-    title: 'La Verdad sobre los Duendes en Latinoamérica',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[2]}/mqdefault.jpg`,
-    views: 144000,
-    duration: '17:49',
-    date: '2026-01-20',
-    youtubeId: YT_IDS[2],
-  },
-  {
-    id: 'v-12',
-    title: 'Psicología del Miedo: ¿Por Qué Nos Aterroriza el Horror?',
-    thumbnail: `https://img.youtube.com/vi/${YT_IDS[3]}/mqdefault.jpg`,
-    views: 89000,
-    duration: '26:11',
-    date: '2026-01-13',
-    youtubeId: YT_IDS[3],
-  },
-]
+// ─── YouTube RSS Fetch ────────────────────────────────────────────────────────
+
+async function fetchLatestVideos(): Promise<YoutubeVideo[]> {
+  const channelId = process.env.NEXT_PUBLIC_YOUTUBE_CHANNEL_ID
+  if (!channelId || channelId.startsWith('UC' + 'x')) return []
+
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
+      { next: { revalidate: 3600 } }
+    )
+    if (!res.ok) return []
+    const xml = await res.text()
+
+    // Each video is wrapped in <entry> tags
+    const entries = xml.match(/<entry>([\s\S]*?)<\/entry>/g)
+    if (!entries) return []
+
+    const videos: YoutubeVideo[] = []
+
+    for (const entry of entries.slice(0, 8)) {
+      // Video ID: <yt:videoId>XXXXX</yt:videoId>
+      const videoIdMatch = entry.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)
+      const youtubeId = videoIdMatch ? videoIdMatch[1].trim() : ''
+
+      // Title: <title>...</title>
+      const titleMatch = entry.match(/<title>([^<]+)<\/title>/)
+      const title = titleMatch ? decodeXML(titleMatch[1].trim()) : ''
+
+      // Published date
+      const dateMatch = entry.match(/<published>([^<]+)<\/published>/)
+      const date = dateMatch ? dateMatch[1].trim() : ''
+
+      // Thumbnail from media:thumbnail
+      const thumbMatch = entry.match(/media:thumbnail[^>]+url="([^"]+)"/)
+      const thumbnail = thumbMatch
+        ? thumbMatch[1]
+        : `https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg`
+
+      // View count from media:statistics
+      const viewsMatch = entry.match(/media:statistics[^>]+views="([^"]+)"/)
+      const views = viewsMatch ? parseInt(viewsMatch[1]) : undefined
+
+      if (youtubeId && title) {
+        videos.push({ id: youtubeId, youtubeId, title, thumbnail, date, views })
+      }
+    }
+
+    return videos
+  } catch {
+    return []
+  }
+}
+
+function decodeXML(str: string): string {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function VideosPage() {
+export default async function VideosPage() {
+  const videos = await fetchLatestVideos()
+  const channelUrl = 'https://youtube.com/@hablemosdeterror'
+
   return (
     <main className="min-h-screen" style={{ background: 'var(--black)' }}>
       <div className="max-w-6xl mx-auto px-4 py-16 flex flex-col gap-12">
@@ -129,16 +92,42 @@ export default function VideosPage() {
           subtitle="Documentales, relatos y análisis del terror en español"
         />
 
-        <VideoGrid videos={VIDEOS} />
+        {videos.length > 0 ? (
+          <VideoGrid videos={videos} />
+        ) : (
+          /* Fallback if channel ID not set or feed unavailable */
+          <div
+            className="flex flex-col items-center gap-6 py-16 rounded-xl"
+            style={{ background: 'var(--dark)', border: '1px solid rgba(139,0,0,0.25)' }}
+          >
+            <p className="text-lg font-bold" style={{ color: 'var(--parchment)' }}>
+              Ver los últimos episodios en YouTube
+            </p>
+            <a
+              href={channelUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-all"
+              style={{
+                background: 'var(--blood)',
+                color: 'var(--parchment)',
+                textDecoration: 'none',
+              }}
+            >
+              Ir al Canal
+              <ExternalLink size={16} />
+            </a>
+          </div>
+        )}
 
         <p className="text-center text-sm" style={{ color: 'var(--fog)' }}>
           ¿Quieres ver más?{' '}
           <a
-            href="https://youtube.com/@hablemosdeterror"
+            href={channelUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 font-bold transition-colors"
-            style={{ color: 'var(--crimson)' }}
+            style={{ color: 'var(--crimson)', textDecoration: 'none' }}
           >
             Visita el canal de YouTube
             <ExternalLink size={13} />

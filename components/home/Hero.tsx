@@ -149,7 +149,7 @@ export function Hero() {
             ▶ Ver Últimos Episodios
           </a>
           <a
-            href="/relatos#enviar"
+            href="/testimonios#enviar"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -214,8 +214,8 @@ export function Hero() {
       >
         {[
           { icon: Mic, label: 'Podcast', href: '/podcast' },
-          { icon: BookOpen, label: 'Relatos', href: '/relatos' },
-          { icon: PenLine, label: 'Enviar Historia', href: '/relatos#enviar' },
+          { icon: BookOpen, label: 'Testimonios', href: '/testimonios' },
+          { icon: PenLine, label: 'Enviar Historia', href: '/testimonios#enviar' },
         ].map(({ icon: Icon, label, href }, i) => (
           <a
             key={label}

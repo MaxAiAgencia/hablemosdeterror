@@ -13,15 +13,15 @@ const cards = [
   },
   {
     icon: BookOpen,
-    title: 'Ver Relatos',
+    title: 'Ver Testimonios',
     description: 'Historias enviadas por la comunidad',
-    href: '/relatos',
+    href: '/testimonios',
   },
   {
     icon: PenLine,
     title: 'Enviar mi Historia',
     description: 'Comparte tu experiencia aterradora',
-    href: '/relatos#enviar',
+    href: '/testimonios#enviar',
   },
 ]
 

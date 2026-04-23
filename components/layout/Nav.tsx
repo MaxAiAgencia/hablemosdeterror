@@ -7,10 +7,11 @@ import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const links = [
+  { label: 'Inicio', href: '/' },
   { label: 'Videos', href: '/videos' },
   { label: 'Podcast', href: '/podcast' },
-  { label: 'Relatos', href: '/relatos' },
-  { label: 'Apoya', href: '/donaciones' },
+  { label: 'Testimonios', href: '/testimonios' },
+  { label: 'Merch', href: '/merch' },
 ]
 
 const noctisLink = { label: 'Noctis', href: '/noctis' }
@@ -60,8 +61,8 @@ export function Nav() {
           <img
             src="/images/logo-horizontal.png"
             alt="Hablemos de Terror"
-            height={40}
-            style={{ height: 40, width: 'auto', objectFit: 'contain' }}
+            height={48}
+            style={{ height: 48, width: 'auto', objectFit: 'contain' }}
           />
         </Link>
 
