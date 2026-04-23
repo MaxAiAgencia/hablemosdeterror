@@ -55,6 +55,41 @@ create policy "relatos_delete_service_role"
 
 
 -- ─────────────────────────────────────────────────────────────
+-- TABLA: testimonios
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.testimonios (
+  id                uuid primary key default gen_random_uuid(),
+  nombre            text not null,
+  email             text,
+  ciudad            text,
+  titulo_testimonio text not null,
+  categoria         text,
+  es_real           boolean not null default false,
+  contenido         text not null,
+  status            text not null default 'pendiente'
+                      check (status in ('pendiente', 'aprobado', 'rechazado', 'publicado')),
+  created_at        timestamptz not null default now()
+);
+
+create index if not exists testimonios_status_idx     on public.testimonios (status);
+create index if not exists testimonios_created_at_idx on public.testimonios (created_at desc);
+
+alter table public.testimonios enable row level security;
+
+create policy "testimonios_insert_publico"
+  on public.testimonios for insert
+  with check (true);
+
+create policy "testimonios_select_service_role"
+  on public.testimonios for select
+  using (auth.role() = 'service_role');
+
+create policy "testimonios_update_service_role"
+  on public.testimonios for update
+  using (auth.role() = 'service_role');
+
+
+-- ─────────────────────────────────────────────────────────────
 -- TABLA: episodios
 -- ─────────────────────────────────────────────────────────────
 create table if not exists public.episodios (

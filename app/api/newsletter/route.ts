@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from('newsletter_subs').insert({
       email,
       nombre: nombre ?? null,
-      tag: tag ?? null,
+      ...(tag ? { tag } : {}),
       created_at: new Date().toISOString(),
     })
 
