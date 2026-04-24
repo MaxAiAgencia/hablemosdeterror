@@ -90,7 +90,6 @@ export async function POST(req: NextRequest) {
     const resendKey = process.env.RESEND_API_KEY
     if (resendKey) {
       try {
-        const preview = contenido.slice(0, 300) + (contenido.length > 300 ? '...' : '')
         await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -111,8 +110,8 @@ export async function POST(req: NextRequest) {
               <p><strong>Categoría:</strong> ${categoria ?? 'No especificada'}</p>
               <p><strong>Tipo:</strong> ${es_real ? 'Experiencia real' : 'Ficción'}</p>
               <hr />
-              <p><strong>Preview del contenido:</strong></p>
-              <p style="white-space: pre-wrap;">${preview}</p>
+              <p><strong>Testimonio completo:</strong></p>
+              <p style="white-space: pre-wrap;">${contenido}</p>
             `,
           }),
         })
