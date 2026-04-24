@@ -35,7 +35,7 @@ export function Hero() {
           inset: 0,
           backgroundImage: 'url(/images/hero.png)',
           backgroundSize: 'cover',
-          backgroundPosition: isMobile ? 'right top' : 'center top',
+          backgroundPosition: isMobile ? '70% top' : 'center top',
           zIndex: 0,
         }}
       />
