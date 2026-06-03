@@ -86,41 +86,39 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Send email notification via Resend (optional)
-    const resendKey = process.env.RESEND_API_KEY
-    if (resendKey) {
+    // Send email notification via Gmail SMTP (optional)
+    const gmailUser = process.env.GMAIL_USER
+    const gmailPass = process.env.GMAIL_APP_PASSWORD
+    if (gmailUser && gmailPass) {
       try {
-        await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${resendKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            from: 'Hablemos de Terror <noreply@hablemosdeterror.com>',
-            to: 'tuhistoria@hablemosdeterror.com',
-            cc: 'max.sosadiaz@gmail.com',
-            subject: `Nuevo testimonio: ${titulo_testimonio}`,
-            html: `
-              <h2>Nuevo testimonio recibido</h2>
-              <p><strong>Nombre:</strong> ${nombre}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Ciudad:</strong> ${ciudad ?? 'No especificada'}</p>
-              <p><strong>Título:</strong> ${titulo_testimonio}</p>
-              <p><strong>Categoría:</strong> ${categoria ?? 'No especificada'}</p>
-              <p><strong>Tipo:</strong> ${es_real ? 'Experiencia real' : 'Ficción'}</p>
-              <hr />
-              <p><strong>Testimonio completo:</strong></p>
-              <p style="white-space: pre-wrap;">${contenido}</p>
-            `,
-          }),
+        const nodemailer = await import('nodemailer')
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: { user: gmailUser, pass: gmailPass },
+        })
+        await transporter.sendMail({
+          from: `Hablemos de Terror <${gmailUser}>`,
+          to: gmailUser,
+          subject: `Nuevo testimonio: ${titulo_testimonio}`,
+          html: `
+            <h2>Nuevo testimonio recibido</h2>
+            <p><strong>Nombre:</strong> ${nombre}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Ciudad:</strong> ${ciudad ?? 'No especificada'}</p>
+            <p><strong>Título:</strong> ${titulo_testimonio}</p>
+            <p><strong>Categoría:</strong> ${categoria ?? 'No especificada'}</p>
+            <p><strong>Tipo:</strong> ${es_real ? 'Experiencia real' : 'Ficción'}</p>
+            <hr />
+            <p><strong>Testimonio completo:</strong></p>
+            <p style="white-space: pre-wrap;">${contenido}</p>
+          `,
         })
       } catch (emailErr) {
         // Email failure should not block the success response
-        console.error('[testimonios] Resend email error:', emailErr)
+        console.error('[testimonios] Gmail email error:', emailErr)
       }
     } else {
-      console.log('[testimonios] Resend not configured — skipping email notification')
+      console.log('[testimonios] Gmail not configured — skipping email notification')
     }
 
     return NextResponse.json({
