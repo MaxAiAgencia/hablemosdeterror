@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         })
         await transporter.sendMail({
           from: `Hablemos de Terror <${gmailUser}>`,
-          to: 'tuhistoria@hablemosdeterror.com',
+          to: gmailUser,
           subject: `Nuevo testimonio: ${titulo_testimonio}`,
           html: `
             <h2>Nuevo testimonio recibido</h2>
